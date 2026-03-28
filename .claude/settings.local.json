@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find C:UsersMominDesktopUnityDementiaPropParaller -path */Assets/* -name *.cs -o -path */Assets/* -name *.md -o -path */Assets/* -name .cursorrules)",
+      "Bash(grep -E \"\\\\.\\(cs|md\\)$|cursorrules\")",
+      "Bash(find C:UsersMominDesktopUnityDementiaPropParaller/Assets -name *.unity -o -name *.prefab -o -name README.md -o -name CLAUDE.md)",
+      "Bash(grep -E \"\\\\.\\(meta|asset\\)$\")",
+      "Bash(unity-mcp-cli run-tool:*)",
+      "Bash(npx unity-mcp-cli:*)",
+      "Bash(npm --version)",
+      "Bash(npm list:*)",
+      "mcp__UnityMCP__manage_scene",
+      "mcp__UnityMCP__manage_camera",
+      "mcp__UnityMCP__manage_animation",
+      "mcp__UnityMCP__manage_gameobject",
+      "mcp__UnityMCP__find_gameobjects",
+      "mcp__UnityMCP__manage_components",
+      "mcp__UnityMCP__manage_editor"
+    ]
+  },
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": []
+}
