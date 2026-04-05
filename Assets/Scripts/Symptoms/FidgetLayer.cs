@@ -1,32 +1,35 @@
 using UnityEngine;
 
-/// <summary>
-/// Attach to: CHAR_Father_Patient
-/// Controls restless hand fidgeting via anxiety level.
-/// </summary>
+// Controls restless hand fidgeting via anxiety level.
+
 public class FidgetLayer : MonoBehaviour
 {
     [Header("References")]
     public Animator fatherAnimator;
 
     [Header("Settings")]
-    public float anxietyThreshold = 0.4f;  // Fidget starts above this level
+    public float anxietyThreshold = 0.1f;  // Fidget starts above this level
     public int fidgetLayerIndex = 1;        // Base=0, FidgetLayer=1
 
     [Header("Anxiety Level — set by Orchestrator")]
     [Range(0f, 2f)]
     public float anxietyLevel = 0f;
 
-    // ── Private ───────────────────────────────────────
     private static readonly int IsFidgeting = 
         Animator.StringToHash("isFidgeting");
     
     private bool _fidgeting;
 
-    // ── Update ────────────────────────────────────────
+    void OnDisable()
+    {
+        if (fatherAnimator == null) return;
+        _fidgeting = false;
+        fatherAnimator.SetBool(IsFidgeting, false);
+        fatherAnimator.SetLayerWeight(fidgetLayerIndex, 0f);
+    }
+
     void Update()
     {
-        // Check if Father should be fidgeting
         bool should = anxietyLevel >= anxietyThreshold;
 
         // Only change parameter when state changes

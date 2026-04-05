@@ -1,11 +1,9 @@
 using System.Collections;
 using UnityEngine;
 
-/// <summary>
-/// Attach to: CHAR_Father_Patient
+
 /// Simulates avoidant eye contact — gaze drifts past
-/// the user rather than looking directly at them.
-/// </summary>
+
 public class EyeContactController : MonoBehaviour
 {
     [Header("References")]

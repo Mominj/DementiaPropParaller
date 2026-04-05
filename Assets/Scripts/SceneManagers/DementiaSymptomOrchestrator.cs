@@ -73,8 +73,8 @@ public class DementiaSymptomOrchestrator : MonoBehaviour
                 t / anxietyRiseTime);
 
             // Send anxiety to fidget system
-            if (fidgetLayer)
-                fidgetLayer.anxietyLevel = anxietyLevel;
+            //if (fidgetLayer)
+              //  fidgetLayer.anxietyLevel = anxietyLevel;
 
             // Faster gaze shifts as anxiety increases
             if (eyeContact)
