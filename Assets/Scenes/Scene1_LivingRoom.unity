@@ -2844,6 +2844,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 26cd291566b3b83409383bd475679f43, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1832449263}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 26cd291566b3b83409383bd475679f43, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1832449264}
   m_SourcePrefab: {fileID: 100100000, guid: 26cd291566b3b83409383bd475679f43, type: 3}
 --- !u!4 &1832449254 stripped
 Transform:
@@ -2940,6 +2943,22 @@ MonoBehaviour:
   isHoldingPaper: 1
   rightArmWeight: 1
   leftArmWeight: 1
+--- !u!114 &1832449264
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1120662287}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9c6e8761976b75d4ab2ef259df8092df, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HeadTiltDown
+  headBone: {fileID: 0}
+  tiltDegrees: 14.4
+  blendSpeed: 3
+  tiltEnabled: 1
 --- !u!4 &1836912888 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2246349242916509827, guid: 26cd291566b3b83409383bd475679f43, type: 3}

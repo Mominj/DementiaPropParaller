@@ -30,12 +30,6 @@ public class Sence1FatherController : MonoBehaviour
             fatherAnimator = GetComponentInChildren<Animator>();
     }
 
-    void Start()
-    {
-        handGrasp.SetGraspImmediate(true);
-        StartCoroutine(ReadThenStand());
-    }
-
     IEnumerator ReadThenStand()
     {
         yield return new WaitForSeconds(readingDuration);
