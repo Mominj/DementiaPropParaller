@@ -4,10 +4,6 @@ using UnityEngine;
 using UnityEditor;
 #endif
 
-/// <summary>
-/// Attach to: PROP_ShoppingList
-/// Follows a bone with offset — supports Scene view rotation handle
-/// </summary>
 public class FollowBone : MonoBehaviour
 {
     [Header("Target Bone")]
@@ -21,38 +17,75 @@ public class FollowBone : MonoBehaviour
     public bool followPosition = true;
     public bool followRotation = true;
 
+    [Header("Start Delay")]
+    [Tooltip("Wait this many seconds before starting to follow bone")]
+    public float startDelay = 013f; // small delay for animation to initialise
+
     [Header("Editor Tools")]
-    public bool showHandle = true;   // show rotate handle in Scene
-    public bool editMode   = false;  // toggle to adjust position live
+    public bool showHandle = true;
+    public bool editMode   = false;
+
+    
+
 
 #if UNITY_EDITOR
     private bool _prevEditMode = false;
 
-    // Fires synchronously when any Inspector field changes — before LateUpdate.
-    // This catches the case where the user unchecks editMode directly in the Inspector
-    // instead of using the context menu.
     void OnValidate()
     {
         if (_prevEditMode && !editMode)
         {
-            // editMode was just turned OFF — capture offset immediately
-            // before LateUpdate can overwrite transform.position
             if (boneToFollow != null)
                 CaptureCurrentOffset();
             else
-                Debug.LogWarning("FollowBone: editMode turned off but boneToFollow is null — assign it first.");
+                Debug.LogWarning("FollowBone: boneToFollow is null");
         }
         _prevEditMode = editMode;
     }
 #endif
 
+    // ── Private ───────────────────────────────────────
+    private bool _ready = false;
+
+    // ── Start ─────────────────────────────────────────
+    void Start()
+    {
+        // Wait for animation to initialise before following
+        StartCoroutine(DelayedStart());
+    }
+
+System.Collections.IEnumerator InitAfterFrame()
+{
+    // Completely hide list on first frame
+    if (TryGetComponent<MeshRenderer>(out var mr))
+        mr.enabled = false;
+
+    // Wait 3 frames to be safe
+    yield return new WaitForEndOfFrame();
+    yield return new WaitForEndOfFrame();
+    yield return new WaitForEndOfFrame();
+
+    // Show list — animator has updated all bones by now
+    if (TryGetComponent<MeshRenderer>(out var mr2))
+        mr2.enabled = true;
+
+    _ready = true;
+    Debug.Log("[FollowBone] Ready ✅");
+}
+    System.Collections.IEnumerator DelayedStart()
+    {
+        // Wait for animator to play first frame
+        yield return new WaitForSeconds(startDelay);
+        _ready = true;
+        Debug.Log("[FollowBone] Started following bone ✅");
+    }
+
     // ── LateUpdate ────────────────────────────────────
     void LateUpdate()
     {
         if (boneToFollow == null) return;
-
-        // Skip following when in edit mode
         if (editMode) return;
+        if (!_ready) return; // wait until delay is done
 
         if (followPosition)
         {
@@ -73,14 +106,13 @@ public class FollowBone : MonoBehaviour
     {
         if (boneToFollow == null)
         {
-            Debug.LogError("FollowBone: boneToFollow is NULL — drag the hand bone into the field!");
+            Debug.LogError("FollowBone: boneToFollow is NULL!");
             return;
         }
 
 #if UNITY_EDITOR
         Undo.RecordObject(this, "Capture Bone Offset");
 #endif
-
         positionOffset = boneToFollow.InverseTransformDirection(
             transform.position - boneToFollow.position);
 
@@ -90,11 +122,8 @@ public class FollowBone : MonoBehaviour
 #if UNITY_EDITOR
         EditorUtility.SetDirty(this);
 #endif
-
-        Debug.Log($"[FollowBone] === CAPTURED OFFSET ===");
         Debug.Log($"[FollowBone] Position Offset: {positionOffset}");
         Debug.Log($"[FollowBone] Rotation Offset: {rotationOffset}");
-        Debug.Log($"[FollowBone] ====================");
     }
 
     // ── Toggle Edit Mode ──────────────────────────────
@@ -106,15 +135,13 @@ public class FollowBone : MonoBehaviour
         _prevEditMode = true;
 #endif
         editMode = true;
-        Debug.Log("[FollowBone] Edit mode ON — use W/E handles to position the prop");
+        Debug.Log("[FollowBone] Edit mode ON");
     }
 
     [ContextMenu("Disable Edit Mode + Capture Offset")]
     public void DisableEditMode()
     {
-        // Capture BEFORE setting editMode = false so LateUpdate cannot race us
         CaptureCurrentOffset();
-
 #if UNITY_EDITOR
         Undo.RecordObject(this, "Disable Edit Mode");
         _prevEditMode = false;
@@ -139,7 +166,7 @@ public class FollowBone : MonoBehaviour
     }
 }
 
-// ── CUSTOM EDITOR — adds move/rotate handles in Scene view ──────
+// ── CUSTOM EDITOR ─────────────────────────────────────────────
 #if UNITY_EDITOR
 [CustomEditor(typeof(FollowBone))]
 public class FollowBoneEditor : Editor
@@ -147,12 +174,10 @@ public class FollowBoneEditor : Editor
     void OnSceneGUI()
     {
         FollowBone followBone = (FollowBone)target;
-
         if (!followBone.showHandle) return;
         if (!followBone.editMode)   return;
         if (followBone.boneToFollow == null) return;
 
-        // Draw position handle
         EditorGUI.BeginChangeCheck();
         Vector3 newPos = Handles.PositionHandle(
             followBone.transform.position,
@@ -163,7 +188,6 @@ public class FollowBoneEditor : Editor
             followBone.transform.position = newPos;
         }
 
-        // Draw rotation handle
         EditorGUI.BeginChangeCheck();
         Quaternion newRot = Handles.RotationHandle(
             followBone.transform.rotation,

@@ -10,13 +10,15 @@ public class FidgetLayer : MonoBehaviour
     [Header("Settings")]
     public float anxietyThreshold = 0.1f;  // Fidget starts above this level
     public int fidgetLayerIndex = 1;        // Base=0, FidgetLayer=1
+    [Tooltip("Multiplies the fidget animation playback speed. Lower = slower trembling.")]
+    public float fidgetAnimSpeed = 0.5f;
 
     [Header("Anxiety Level — set by Orchestrator")]
     [Range(0f, 2f)]
     public float anxietyLevel = 0f;
 
-    private static readonly int IsFidgeting = 
-        Animator.StringToHash("isFidgeting");
+    private static readonly int IsFidgeting =
+        Animator.StringToHash("isFidgeting 1");
     
     private bool _fidgeting;
 
@@ -48,14 +50,17 @@ public class FidgetLayer : MonoBehaviour
             : 0f;
 
         // Smoothly adjust layer weight
-        float currentWeight = 
+        float currentWeight =
             fatherAnimator.GetLayerWeight(fidgetLayerIndex);
-        
+
         fatherAnimator.SetLayerWeight(
             fidgetLayerIndex,
             Mathf.MoveTowards(
-                currentWeight, 
-                targetWeight, 
+                currentWeight,
+                targetWeight,
                 Time.deltaTime * 0.8f));
+
+        // Control trembling speed via layer playback speed
+        fatherAnimator.SetFloat("FidgetSpeed", should ? fidgetAnimSpeed : 1f);
     }
 }
